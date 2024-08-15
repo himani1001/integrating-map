@@ -1,16 +1,19 @@
 import { useEffect, useRef } from "react";
 import leaflet from 'leaflet';
 import useLocalStorage from "../hooks/useLocalStorage";
+import useGeolocation from "../hooks/useGeolocation";
 
 export default function Map() {
     const mapRef = useRef(null);
     const divRef = useRef(null);
     const userMarker = useRef(null);
-    
+
     const [userPosition, setUserPosition] = useLocalStorage('USER_MARKER', {
         latitude: 0,
         longitude: 0,
     });
+
+    const location = useGeolocation();
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -33,16 +36,22 @@ export default function Map() {
     }, []);
 
     useEffect(() => {
-        if (mapRef.current) {
-            // If there is already a marker, remove it before adding a new one
-            if (userMarker.current) {
-                mapRef.current.removeLayer(userMarker.current);
-            }
+        if (location.latitude && location.longitude) {
+            setUserPosition({ latitude: location.latitude, longitude: location.longitude });
 
-            // Add a new marker to the map at the user's position
-            userMarker.current = leaflet.marker([userPosition.latitude, userPosition.longitude]).addTo(mapRef.current);
+            if (mapRef.current) {
+                // If there is already a marker, remove it before adding a new one
+                if (userMarker.current) {
+                    mapRef.current.removeLayer(userMarker.current);
+                }
+
+                // Add a new marker to the map at the user's position
+                userMarker.current = leaflet.marker([location.latitude, location.longitude]).addTo(mapRef.current);
+
+                mapRef.current.setView([location.latitude, location.longitude]);
+            }
         }
-    }, [userPosition]);
+    }, [location, setUserPosition]);
 
     return <div id="map" ref={divRef} style={{ height: '100vh' }}></div>;
 }
