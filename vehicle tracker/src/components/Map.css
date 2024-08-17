@@ -11,7 +11,6 @@
     margin-bottom: 20px;
 }
 
-/* Configuration panel at the bottom */
 .config-panel {
     width: 100%;
     background-color: #f5f5f5;
@@ -58,7 +57,6 @@
     background-color: #0056b3;
 }
 
-/* Control box styling */
 .control-box {
     width: 100%;
     background-color: #e9ecef;
